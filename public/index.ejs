@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.7" />
+    <title>Donate - Pix4</title>
+    <meta name="description" content="Donate to Z3NTL3!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Donate - Pix4" />
+    <meta property="og:description" content="Donate to Z3NTL3!" />
+    <meta property="og:url" content="<%= home %>" />
+    <meta property="og:image" content="<%= home %>/img/paypal.png" />
+    <meta property="og:site_name" content="Donate - Pix4" />
+    <link rel="shortcut icon"
+    href="https://avatars.githubusercontent.com/u/48758770?s=400&u=d0a4b500baea4e122b127eb91b4a80af3464f9f5&v=4
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="<%= home %>/css/style.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/js/bootstrap.min.js"
+      integrity="sha512-5BqtYqlWfJemW5+v+TZUs22uigI8tXeVah5S/1Z6qBLVO7gakAOtkOzUtgq6dsIo5c0NJdmGPs0H9I+2OHUHVQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/css/bootstrap-grid.min.css"
+      integrity="sha512-a+PObWRxNVh4HZR9wijCGj84JgJ/QhZ8dET09REfYz2clUBjKYhGbOmdy9KEHilYKgbMSIHNQEsonv/r75mHXw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.2/css/bootstrap.min.css"
+      integrity="sha512-CpIKUSyh9QX2+zSdfGP+eWLx23C8Dj9/XmHjZY2uDtfkdLGo0uY12jgcnkX9vXOgYajEKb/jiw67EYm+kBf+6g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://www.paypal.com/sdk/js?&components=buttons,funding-eligibility,hosted-fields&client-id=<%- ID %>&currency=EUR&enable-funding=venmo,bancontact,card,credit,paylater,blik,sofort,sepa,p24,giropay,mybank,mercadopago,eps"
+      data-client-token="<%= CLIENT_TOKEN %>"
+    ></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div class="container px-4 py-5 mx-auto mt-5">
+      <div class="card spatie">
+        <div class="d-flex flex-lg-row flex-column-reverse">
+          <div class="card card1">
+            <div class="row d-flex justify-content-center my-auto">
+              <div class="col-md-8 col-10 my-5">
+                <div class="row justify-content-center px-3 mb-3">
+                  <img id="logo" src="<%= home%>/img/logo.png" />
+                </div>
+                <h3 class="mb-1 text-center heading">Pix4 Devs</h3>
+                <p class="text-center">
+                  Website backend in
+                  <a href="https://fastify.io">FastifyJS</a> programmed by
+                  <span style="font-weight: bold">Z3NTL3</span> view source
+                  code:
+                  <a href="https://github.com/Z3NTL3/z3ntl3.pix4.dev">Github</a>
+                </p>
+
+                <h6>Amount to donate</h6>
+                <div class="select col-sm-12 mb-2 d-flex">
+                  <select class="text-center" onchange="amount(this)">
+                    <option value="5.00">€5,00</option>
+                    <option value="10.00">€10,00</option>
+                    <option value="20.00">€20,00</option>
+                    <option value="30.00">€30,00</option>
+                    <option value="40.00">€40,00</option>
+                    <option value="50.00">€50,00</option>
+                  </select>
+                </div>
+                <h6 class="msg-info">
+                  This donation goes directly personaly to Z3NTL3.
+                </h6>
+                <div class="braintree-dropin"></div>
+                <div
+                  class="row justify-content-center my-3 px-3"
+                  id="marks"
+                ></div>
+                <div
+                  class="row justify-content-center my-3 px-3 p-2"
+                  id="paypal-container"
+                  no_shipping="1"
+                ></div>
+                <h6
+                  class="msg-info row justify-content-center my-3 px-3"
+                  id="bericht"
+                ></h6>
+              </div>
+            </div>
+          </div>
+          <div class="card card2">
+            <div class="my-auto mx-md-5 px-md-5 right">
+              <img src="<%= home %>/img/paypal.png" width="240" />
+              <h3 class="text-white">Additional Information</h3>
+              <small class="text-white">
+                - The website is end-to-end encrypted.<br />
+                - No personal data is saved.<br />
+                - Your payments are handled and secured by Paypal.<br />
+                - Website uses Brotli 11 compression as priority to serve
+                speedy.<br />
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var donationAmount = "5.00";
+    function amount(child) {
+      donationAmount = `${child.value}`;
+    }
+
+    paypal
+      .Buttons({
+        style: {
+          color: "black",
+        },
+        createOrder: function (data, actions) {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: {
+                  currency_code: "EUR",
+                  value: donationAmount,
+                },
+              },
+            ],
+            application_context: {
+              shipping_preference: "NO_SHIPPING",
+            },
+          });
+        },
+        onApprove: function (data, actions) {
+          console.log(data);
+          Swal.fire({
+            icon: "success",
+            title: "Thanks!",
+            text: `You have donated €${donationAmount}.`,
+          });
+        },
+        onCancel: function (data) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You have cancelled the donation!",
+          });
+        },
+        onError: function (err) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You have cancelled or closed the Paypal Checkout frame! Try again...",
+          });
+        },
+      })
+      .render("#paypal-container");
+  </script>
+</html>
