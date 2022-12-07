@@ -130,6 +130,7 @@
     "through2": "^2.0.5",
     "tiny-lru": "^9.0.3",
     "toidentifier": "^1.0.1",
+    "update-dotenv": "^1.1.1",
     "uri-js": "^4.4.1",
     "util-deprecate": "^1.0.2",
     "wrappy": "^1.0.2",

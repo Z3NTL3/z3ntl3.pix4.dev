@@ -22,11 +22,11 @@ require("dotenv").config();
 const path = require("path");
 const fs = require("node:fs");
 const axios = require("axios").default;
-
 const BASE = process.env.BASE;
 const CLIENT_ID = process.env.CLIENT_ID;
 const SECRET = process.env.SECRET;
 const PORT = process.env.port;
+const updateDotenv = require("update-dotenv");
 var ACCESS_TOKEN = "";
 
 var routes = [];
@@ -124,7 +124,7 @@ var Start = async () => {
       }
     }
   );
-  app.errorHandler(async (err, req, res) => {
+  app.setErrorHandler(async (err, req, res) => {
     console.log(err);
     res.send("Err");
   });
@@ -132,11 +132,15 @@ var Start = async () => {
   for (var i = 0; i < routes.length; i++) {
     await app.register(require(routes[i]));
   }
-  await app.listen({ host: "localhost", port: PORT }, (err, address) => {
+  app.listen({ host: "localhost", port: PORT }, async (err, address) => {
     if (err) {
       console.log(err);
       process.exit(-1);
     }
+    // Dynamically update .env HOME key instead of hard-code HOME
+    await updateDotenv({
+      HOME: `${address}`,
+    });
     console.log(`Running at: ${address}`);
   });
 };
