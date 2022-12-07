@@ -16,6 +16,7 @@ const app = require("fastify").default({
   bodyLimit: 200000,
   querystringParser: (str) => qs.parse(str, { parameterLimit: 30 }),
 });
+
 const fp = require("fastify-plugin");
 const util = require("util");
 const path = require("path");
