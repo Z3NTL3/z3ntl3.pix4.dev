@@ -12,14 +12,40 @@ const app = require("fastify").default({
   bodyLimit: 200000,
   querystringParser: (str) => qs.parse(str, { parameterLimit: 30 }),
 });
-
+const fp = require("fastify-plugin");
 const util = require("util");
 require("dotenv").config();
 const path = require("path");
 const port = process.env.port;
 const fs = require("node:fs");
+const axios = require("axios").default;
+
+const BASE = process.env.BASE;
+const CLIENT_ID = process.env.CLIENT_ID;
+const SECRET = process.env.SECRET;
+var ACCESS_TOKEN = "";
 
 var routes = [];
+const instanceStart = axios.create({
+  baseURL: BASE,
+  timeout: 5000,
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+    Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${SECRET}`).toString(
+      "base64"
+    )}`,
+  },
+});
+const schemas = require(path.join(__dirname, "schemas", "params.js"));
+
+app.addSchema(schemas.captureSchema);
+const mainInstance = axios.create({
+  baseURL: BASE,
+  timeout: 5000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 var Routes = (callback) => {
   let routesDir = path.join(__dirname, "routes");
@@ -33,8 +59,47 @@ var Routes = (callback) => {
 };
 const getRoutes = util.promisify(Routes);
 
+function getToken() {
+  return new Promise(async (resolve) => {
+    try {
+      let req = await instanceStart.post(
+        "/v1/oauth2/token",
+        qs.stringify({ grant_type: "client_credentials" })
+      );
+
+      ACCESS_TOKEN = req.data.access_token;
+      mainInstance.defaults.headers.post[
+        "Authorization"
+      ] = `Bearer ${ACCESS_TOKEN}`;
+      return resolve(req.data.access_token);
+    } catch (err) {
+      return resolve(err);
+    }
+  });
+}
+
+function getClientToken() {
+  return new Promise(async (resolve) => {
+    try {
+      let req = await mainInstance.post("/v1/identity/generate-token");
+      resolve(req.data.client_token);
+    } catch (err) {
+      return resolve(err);
+    }
+  });
+}
+
 var Start = async () => {
   await getRoutes();
+  await getToken();
+
+  await app.register(
+    fp((fastify, opts, done) => {
+      app.decorate("genClientToken", getClientToken());
+      app.decorate("getToken", getToken());
+      done();
+    })
+  );
 
   await app.register(require("fast-compressor")); // -> https://github.com/Z3NTL3/fast-compressor or https://www.npmjs.com/package/fast-compressor
   await app.register(require("@fastify/compress"), {
