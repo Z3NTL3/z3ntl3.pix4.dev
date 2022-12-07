@@ -104,7 +104,10 @@ var Start = async () => {
       done();
     })
   );
-
+  await app.register(require("@fastify/static"), {
+    root: path.join(__dirname, "public"),
+    preCompressed: true,
+  });
   await app.register(require("fast-compressor")); // -> https://github.com/Z3NTL3/fast-compressor or https://www.npmjs.com/package/fast-compressor
   await app.register(require("@fastify/compress"), {
     global: true,
@@ -112,7 +115,13 @@ var Start = async () => {
     inflateIfDeflated: true,
   });
   await app.register(require("@fastify/formbody"));
-
+  await app.register(require("@fastify/view"), {
+    engine: {
+      ejs: require("ejs"),
+    },
+    root: path.join(__dirname, "public"),
+    propertyName: "render",
+  });
   app.addContentTypeParser(
     "*",
     { parseAs: "string" },

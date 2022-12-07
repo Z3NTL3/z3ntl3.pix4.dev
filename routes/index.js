@@ -10,7 +10,10 @@ module.exports = function (fastify, opts, done) {
       }
       clientToken = await fastify.getClientToken;
     }
-    res.send("Got Token");
+    return res.render("index", {
+      CLIENT_TOKEN: clientToken,
+      home: process.env.HOME,
+    });
   });
   done();
 };
