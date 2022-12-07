@@ -94,13 +94,13 @@ function getClientToken() {
 }
 
 var Start = async () => {
-  // await getRoutes();
+  await getRoutes();
   await getToken();
 
   await app.register(
     fp((fastify, opts, done) => {
-      app.decorate("genClientToken", getClientToken());
-      app.decorate("getToken", getToken());
+      fastify.decorate("getClientToken", getClientToken());
+      fastify.decorate("getToken", getToken());
       done();
     })
   );
@@ -124,9 +124,13 @@ var Start = async () => {
       }
     }
   );
+  app.errorHandler(async (err, req, res) => {
+    console.log(err);
+    res.send("Err");
+  });
 
   for (var i = 0; i < routes.length; i++) {
-    await app.register(routes[i]);
+    await app.register(require(routes[i]));
   }
   await app.listen({ host: "localhost", port: PORT }, (err, address) => {
     if (err) {

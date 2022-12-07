@@ -83,6 +83,7 @@
     "minimatch": "^3.1.2",
     "minipass": "^3.3.4",
     "ms": "^2.1.2",
+    "node-whois": "^2.1.3",
     "npm": "^9.1.3",
     "on-exit-leak-free": "^2.1.0",
     "on-finished": "^2.4.1",
@@ -141,7 +142,8 @@
   "scripts": {
     "test": "node server.js",
     "start": "node server.js",
-    "build": "esbuild test-schemas/params.js --bundle --platform=node --target=node14 --outfile=schemas/schemas.js"
+    "build": "esbuild test-schemas/params.js --bundle --platform=node --target=node14 --outfile=schemas/schemas.js",
+    "push-github": "git add -A && git commit -m '$(date)' && git push origin main"
   },
   "author": "Z3NTL3",
   "license": "ISC"
