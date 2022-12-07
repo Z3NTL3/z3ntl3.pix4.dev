@@ -1,7 +1,11 @@
 /*
  *     Programmed by Z3NTL3 (Pix4)
  *     License: GNU
- *     Link: z3ntl3.pix4.dev
+ *     Live On: z3ntl3.pix4.dev
+ *
+ *     Want to hire? Contact me on Telegram!
+ *                  @z3ntl3
+ *                t.me/z3ntl3
  */
 const qs = require("qs");
 const app = require("fastify").default({
@@ -16,13 +20,13 @@ const fp = require("fastify-plugin");
 const util = require("util");
 require("dotenv").config();
 const path = require("path");
-const port = process.env.port;
 const fs = require("node:fs");
 const axios = require("axios").default;
 
 const BASE = process.env.BASE;
 const CLIENT_ID = process.env.CLIENT_ID;
 const SECRET = process.env.SECRET;
+const PORT = process.env.port;
 var ACCESS_TOKEN = "";
 
 var routes = [];
@@ -36,9 +40,9 @@ const instanceStart = axios.create({
     )}`,
   },
 });
-const schemas = require(path.join(__dirname, "schemas", "params.js"));
-
+const schemas = require(path.join(__dirname, "schemas", "schemas.js"));
 app.addSchema(schemas.captureSchema);
+
 const mainInstance = axios.create({
   baseURL: BASE,
   timeout: 5000,
@@ -90,7 +94,7 @@ function getClientToken() {
 }
 
 var Start = async () => {
-  await getRoutes();
+  // await getRoutes();
   await getToken();
 
   await app.register(
@@ -124,5 +128,12 @@ var Start = async () => {
   for (var i = 0; i < routes.length; i++) {
     await app.register(routes[i]);
   }
+  await app.listen({ host: "localhost", port: PORT }, (err, address) => {
+    if (err) {
+      console.log(err);
+      process.exit(-1);
+    }
+    console.log(`Running at: ${address}`);
+  });
 };
 Start();

@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "@fastify/compress": "^6.2.0",
+    "@fastify/cookie": "^8.3.0",
     "@fastify/formbody": "^7.4.0",
     "abort-controller": "^3.0.0",
     "abstract-logging": "^2.0.1",
@@ -39,6 +40,7 @@
     "ejs": "^3.1.8",
     "encodeurl": "^1.0.2",
     "end-of-stream": "^1.4.4",
+    "esbuild": "0.16.1",
     "escape-html": "^1.0.3",
     "etag": "^1.8.1",
     "event-target-shim": "^5.0.1",
@@ -61,6 +63,7 @@
     "from2": "^2.3.0",
     "fs.realpath": "^1.0.0",
     "glob": "^8.0.3",
+    "google-auth-library": "^8.7.0",
     "has-flag": "^4.0.0",
     "hashlru": "^2.3.0",
     "http-errors": "^2.0.0",
@@ -137,7 +140,8 @@
   },
   "scripts": {
     "test": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "esbuild test-schemas/params.js --bundle --platform=node --target=node14 --outfile=schemas/schemas.js"
   },
   "author": "Z3NTL3",
   "license": "ISC"
