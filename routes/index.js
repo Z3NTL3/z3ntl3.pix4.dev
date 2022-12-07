@@ -37,7 +37,7 @@ module.exports = function (fastify, opts, done) {
     }
     return res.render("index", {
       CLIENT_TOKEN: clientToken,
-      home: "https://z3ntl3.pix4.dev",
+      home: fastify.HOME,
       ID: id,
     });
   });
