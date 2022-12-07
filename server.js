@@ -16,20 +16,23 @@ const app = require("fastify").default({
   bodyLimit: 200000,
   querystringParser: (str) => qs.parse(str, { parameterLimit: 30 }),
 });
-
 const fp = require("fastify-plugin");
 const util = require("util");
 const path = require("path");
 const fs = require("node:fs");
 const axios = require("axios");
 
+const HOME = "https://z3ntl3.pix4.dev";
 const BASE = "https://api-m.paypal.com";
-const CLIENT_ID = "PAYPAL CLIENT ID";
-const SECRET = "PAYPAL SECRET";
+const CLIENT_ID =
+  "PAYPAL CLIENT ID";
+const SECRET =
+  "PAYPAL SECRET";
 const PORT = 2000;
 var ACCESS_TOKEN = "";
 
 app.decorate("ID", CLIENT_ID);
+app.decorate("HOME", HOME);
 
 var routes = [];
 const instanceStart = axios.create({
