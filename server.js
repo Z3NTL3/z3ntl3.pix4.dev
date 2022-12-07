@@ -18,36 +18,39 @@ const app = require("fastify").default({
 });
 const fp = require("fastify-plugin");
 const util = require("util");
-require("dotenv").config();
 const path = require("path");
 const fs = require("node:fs");
-const axios = require("axios").default;
-const BASE = process.env.BASE;
-const CLIENT_ID = process.env.CLIENT_ID;
-const SECRET = process.env.SECRET;
-const PORT = process.env.port;
-const updateDotenv = require("update-dotenv");
+const axios = require("axios");
+
+const BASE = "https://api-m.paypal.com";
+const CLIENT_ID = "PAYPAL CLIENT ID";
+const SECRET = "PAYPAL SECRET";
+const PORT = 2000;
 var ACCESS_TOKEN = "";
+
+app.decorate("ID", CLIENT_ID);
 
 var routes = [];
 const instanceStart = axios.create({
   baseURL: BASE,
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
     Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${SECRET}`).toString(
       "base64"
     )}`,
+    Accept: "application/json",
+    "Accept-Encoding": "identity",
   },
 });
-const schemas = require(path.join(__dirname, "schemas", "schemas.js"));
-app.addSchema(schemas.captureSchema);
 
 const mainInstance = axios.create({
   baseURL: BASE,
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/json",
+    "Accept-Encoding": "identity",
   },
 });
 
@@ -77,6 +80,7 @@ function getToken() {
       ] = `Bearer ${ACCESS_TOKEN}`;
       return resolve(req.data.access_token);
     } catch (err) {
+      console.log(err);
       return resolve(err);
     }
   });
@@ -88,6 +92,7 @@ function getClientToken() {
       let req = await mainInstance.post("/v1/identity/generate-token");
       resolve(req.data.client_token);
     } catch (err) {
+      // console.log(err);
       return resolve(err);
     }
   });
@@ -114,7 +119,6 @@ var Start = async () => {
     treshold: 200,
     inflateIfDeflated: true,
   });
-  await app.register(require("@fastify/formbody"));
   await app.register(require("@fastify/view"), {
     engine: {
       ejs: require("ejs"),
@@ -135,7 +139,24 @@ var Start = async () => {
   );
   app.setErrorHandler(async (err, req, res) => {
     console.log(err);
-    res.send("Err");
+    let { data, encoding, success } = await fastify.fastRESTcomp(
+      req.headers["accept-encoding"],
+      JSON.stringify({ msg: "Oops... Try again later." }, null, 4)
+    );
+
+    if (encoding !== null) {
+      res.header("Content-Encoding", encoding);
+    }
+
+    if (success !== null) {
+      return res.send(data);
+    }
+    return res.send(
+      JSON.stringify({ msg: "Oops... Try again later." }, null, 4)
+    );
+  });
+  app.setNotFoundHandler("/", (req, res) => {
+    res.redirect("/");
   });
 
   for (var i = 0; i < routes.length; i++) {
@@ -146,10 +167,6 @@ var Start = async () => {
       console.log(err);
       process.exit(-1);
     }
-    // Dynamically update .env HOME key instead of hard-code HOME
-    await updateDotenv({
-      HOME: `${address}`,
-    });
     console.log(`Running at: ${address}`);
   });
 };
