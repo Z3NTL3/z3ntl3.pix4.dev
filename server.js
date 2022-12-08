@@ -116,6 +116,15 @@ var Start = async () => {
   await app.register(require("@fastify/static"), {
     root: path.join(__dirname, "public"),
     preCompressed: true,
+    setHeaders: function (res, path, stat) {
+      if (String(path).endsWith("br")) {
+        res.setHeader("Content-Encoding", "br");
+      } else if (String(path).endsWith("gzip")) {
+        res.setHeader("Content-Encoding", "gzip");
+      } else {
+        return;
+      }
+    },
   });
   await app.register(require("fast-compressor")); // -> https://github.com/Z3NTL3/fast-compressor or https://www.npmjs.com/package/fast-compressor
   await app.register(require("@fastify/compress"), {
